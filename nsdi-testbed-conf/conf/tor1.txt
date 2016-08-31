@@ -71,6 +71,6 @@ l3 l3table add mac=00:00:00:00:68:FE ip=192.168.102.26 port=ge25 intf=0
 l3 l3table add mac=00:00:00:00:69:FE ip=192.168.102.36 port=ge26 intf=0
 l3 l3table add mac=00:00:00:00:6a:FE ip=192.168.102.46 port=ge27 intf=0
 
-m wredconfig_cell maxdroprate=0xe enable=1
-m wredparam_cell dropstartpoint=240 dropendpoint=240
+m wredconfig_packet maxdroprate=0xe enable=1
+m wredparam_packet dropstartpoint=20 dropendpoint=20
 s ecn_config 0xffffff
