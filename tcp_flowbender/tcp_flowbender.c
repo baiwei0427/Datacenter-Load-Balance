@@ -255,18 +255,22 @@ static void dctcp_update_alpha(struct sock *sk, u32 flags)
 
 static void dctcp_state(struct sock *sk, u8 new_state)
 {
-	if (dctcp_clamp_alpha_on_loss && new_state == TCP_CA_Loss) {
+	if (new_state == TCP_CA_Loss) {
 		struct dctcp *ca = inet_csk_ca(sk);
+		/* FlowBender reacts to packet losses */
+		ca->reroute++;
 
-		/* If this extension is enabled, we clamp dctcp_alpha to
-		 * max on packet loss; the motivation is that dctcp_alpha
-		 * is an indicator to the extend of congestion and packet
-		 * loss is an indicator of extreme congestion; setting
-		 * this in practice turned out to be beneficial, and
-		 * effectively assumes total congestion which reduces the
-		 * window by half.
-		 */
-		ca->dctcp_alpha = DCTCP_MAX_ALPHA;
+		if (dctcp_clamp_alpha_on_loss) {
+			/* If this extension is enabled, we clamp dctcp_alpha to
+			 * max on packet loss; the motivation is that dctcp_alpha
+			 * is an indicator to the extend of congestion and packet
+			 * loss is an indicator of extreme congestion; setting
+			 * this in practice turned out to be beneficial, and
+			 * effectively assumes total congestion which reduces the
+			 * window by half.
+			 */
+			ca->dctcp_alpha = DCTCP_MAX_ALPHA;
+		}
 	}
 }
 
