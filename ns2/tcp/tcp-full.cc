@@ -845,8 +845,9 @@ FullTcpAgent::sendpacket(int seqno, int ackno, int pflags, int datalen, int reas
         if (!p) p = allocpkt();
         hdr_tcp *tcph = hdr_tcp::access(p);
 	hdr_flags *fh = hdr_flags::access(p);
+        hdr_ip *iph = hdr_ip::access(p);
 
-	/* build basic header w/options */
+        /* build basic header w/options */
 
         tcph->seqno() = seqno;
         tcph->ackno() = ackno;
@@ -925,6 +926,10 @@ FullTcpAgent::sendpacket(int seqno, int ackno, int pflags, int datalen, int reas
 //printf("%f(%s)[state:%s]: sending pkt ", now(), name(), statestr(state_));
 //prpkt(p);
 //}
+
+        /* If we enable FlowBender */
+        if (flowbender_)
+                iph->prio() = flowbender_v;
 
 	send(p, 0);
 
