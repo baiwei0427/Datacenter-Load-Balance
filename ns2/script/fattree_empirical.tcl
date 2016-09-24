@@ -19,16 +19,17 @@ set ecn_thresh [lindex $argv 10]
 #### TCP options
 set init_window [lindex $argv 11]
 set rto_min [lindex $argv 12]
-set enable_flowbender [lindex $argv 13]
-set flowbender_t [lindex $argv 14]
-set flowbender_n [lindex $argv 15]
+set dupack_thresh [lindex $argv 13]
+set enable_flowbender [lindex $argv 14]
+set flowbender_t [lindex $argv 15]
+set flowbender_n [lindex $argv 16]
 
 #### Topology
-set fattree_k [lindex $argv 16]
-set topology_x [lindex $argv 17]
+set fattree_k [lindex $argv 17]
+set topology_x [lindex $argv 18]
 
 ### result file
-set flowlog [open [lindex $argv 18] w]
+set flowlog [open [lindex $argv 19] w]
 
 set debug_mode 1
 set sim_start [clock seconds]
@@ -52,6 +53,7 @@ Agent/TCP set rtxcur_init_ $rto_min; # initial RTO
 Agent/TCP set maxrto_ 64
 Agent/TCP set windowOption_ 0
 
+Agent/TCP/FullTcp set tcprexmtthresh_ $dupack_thresh; #duplicate ACK threshold
 Agent/TCP/FullTcp set nodelay_ true; # disable Nagle
 Agent/TCP/FullTcp set segsize_ $packet_size
 Agent/TCP/FullTcp set segsperack_ 1; # ACK frequency

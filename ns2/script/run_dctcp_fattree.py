@@ -22,14 +22,18 @@ loads = [0.4, 0.6, 0.8]
 connections_per_pair = 2
 mean_flow_size = 1711250
 flow_cdf = 'CDF_dctcp.tcl'
+
 packet_size = 1460
 queue_size = 333
 ecn_thresh = 60
+
 init_window = 10
 rto_min = 0.005
+dupack_thresh = 10
 enable_flowbender = True
 flowbender_t = 0.05
 flowbender_n = 1
+
 fattree_k = 6
 topology_x = 2
 
@@ -58,6 +62,7 @@ for load in loads:
         + str(ecn_thresh) + ' '\
         + str(init_window) + ' '\
         + str(rto_min) + ' '\
+        + str(dupack_thresh) + ' '\
         + str(enable_flowbender) + ' '\
         + str(flowbender_t) + ' '\
         + str(flowbender_n) + ' '\
