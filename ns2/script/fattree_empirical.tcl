@@ -12,28 +12,28 @@ set mean_flow_size [lindex $argv 6]
 set flow_cdf [lindex $argv 7]
 
 #### Switch side options
-set queue_size [lindex $argv 8]
-set ecn_thresh [lindex $argv 9]
+set packet_size [lindex $argv 8]
+set queue_size [lindex $argv 9]
+set ecn_thresh [lindex $argv 10]
 
 #### TCP options
-set init_window [lindex $argv 10]
-set rto_min [lindex $argv 11]
-set enable_flowbender [lindex $argv 12]
-set flowbender_t [lindex $argv 13]
-set flowbender_n [lindex $argv 14]
+set init_window [lindex $argv 11]
+set rto_min [lindex $argv 12]
+set enable_flowbender [lindex $argv 13]
+set flowbender_t [lindex $argv 14]
+set flowbender_n [lindex $argv 15]
 
 #### Topology
-set fattree_k [lindex $argv 15]
-set topology_x [lindex $argv 16]
+set fattree_k [lindex $argv 16]
+set topology_x [lindex $argv 17]
 
 ### result file
-set flowlog [open [lindex $argv 17] w]
+set flowlog [open [lindex $argv 18] w]
 
 set debug_mode 1
 set sim_start [clock seconds]
 set flow_gen 0; #the number of flows that have been generated
 set flow_fin 0; #the number of flows that have finished
-set packet_size 1460; #Jumbo packet (9KB)
 set source_alg Agent/TCP/FullTcp/Sack
 set switch_alg RED
 
