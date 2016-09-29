@@ -24,8 +24,10 @@ mean_flow_size = 1711250
 flow_cdf = 'CDF_dctcp.tcl'
 
 packet_size = 1460
-queue_size = 333
-ecn_thresh = 60
+switch_queue_size = 333
+switch_ecn_thresh = 60
+nic_queue_size = 3333
+nic_ecn_thresh = 3334
 
 init_window = 10
 rto_min = 0.005
@@ -58,8 +60,10 @@ for load in loads:
         + str(mean_flow_size) + ' '\
         + str(flow_cdf) + ' '\
         + str(packet_size) + ' '\
-        + str(queue_size) + ' '\
-        + str(ecn_thresh) + ' '\
+        + str(switch_queue_size) + ' '\
+        + str(switch_ecn_thresh) + ' '\
+        + str(nic_queue_size) + ' '\
+        + str(nic_ecn_thresh) + ' '\
         + str(init_window) + ' '\
         + str(rto_min) + ' '\
         + str(dupack_thresh) + ' '\

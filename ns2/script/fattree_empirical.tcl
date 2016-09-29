@@ -11,25 +11,27 @@ set connections_per_pair [lindex $argv 5]
 set mean_flow_size [lindex $argv 6]
 set flow_cdf [lindex $argv 7]
 
-#### Switch side options
+#### Switch and NIC options
 set packet_size [lindex $argv 8]
-set queue_size [lindex $argv 9]
-set ecn_thresh [lindex $argv 10]
+set switch_queue_size [lindex $argv 9]
+set switch_ecn_thresh [lindex $argv 10]
+set nic_queue_size [lindex $argv 11]
+set nic_ecn_thresh [lindex $argv 12]
 
 #### TCP options
-set init_window [lindex $argv 11]
-set rto_min [lindex $argv 12]
-set dupack_thresh [lindex $argv 13]
-set enable_flowbender [lindex $argv 14]
-set flowbender_t [lindex $argv 15]
-set flowbender_n [lindex $argv 16]
+set init_window [lindex $argv 13]
+set rto_min [lindex $argv 14]
+set dupack_thresh [lindex $argv 15]
+set enable_flowbender [lindex $argv 16]
+set flowbender_t [lindex $argv 17]
+set flowbender_n [lindex $argv 18]
 
 #### Topology
-set fattree_k [lindex $argv 17]
-set topology_x [lindex $argv 18]
+set fattree_k [lindex $argv 19]
+set topology_x [lindex $argv 20]
 
 ### result file
-set flowlog [open [lindex $argv 19] w]
+set flowlog [open [lindex $argv 21] w]
 
 set debug_mode 1
 set sim_start [clock seconds]
@@ -63,7 +65,7 @@ Agent/TCP/FullTcp set flowbender_t_ $flowbender_t
 Agent/TCP/FullTcp set flowbender_n_ $flowbender_n
 
 ################ Queue #########################
-Queue set limit_ $queue_size
+Queue set limit_ $switch_queue_size
 Queue/RED set bytes_ false
 Queue/RED set queue_in_bytes_ true
 Queue/RED set mean_pktsize_ [expr $packet_size + 40]
@@ -71,8 +73,8 @@ Queue/RED set setbit_ true
 Queue/RED set gentle_ false
 Queue/RED set q_weight_ 1.0
 Queue/RED set mark_p_ 1.0
-Queue/RED set thresh_ $ecn_thresh
-Queue/RED set maxthresh_ $ecn_thresh
+Queue/RED set thresh_ $switch_ecn_thresh
+Queue/RED set maxthresh_ $switch_ecn_thresh
 
 ################ Multipathing ###########################
 $ns rtproto DV
@@ -121,6 +123,13 @@ for {set i 0} {$i < $topology_cores} {incr i} {
 for {set i 0} {$i < $topology_servers} {incr i} {
         set j [expr $i / $topology_spt] ; # ToR ID
         $ns duplex-link $s($i) $edge($j) [set link_rate]Gb [expr $host_delay + $mean_link_delay] $switch_alg
+
+        ####### Configure NIC queue
+        set L [$ns link $s($i) $edge($j)]
+        set q [$L set queue_]
+        $q set limit_ $nic_queue_size
+        $q set thresh_ $nic_ecn_thresh
+        $q set maxthresh_ $nic_ecn_thresh
 }
 
 ######### Links from Edge to Aggregation Switches #########
