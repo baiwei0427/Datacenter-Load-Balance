@@ -5,7 +5,7 @@ import Queue
 def worker():
     while True:
         try:
-			j = q.get(block = 0)
+            j = q.get(block = 0)
         except Queue.Empty:
             return
         #Make directory to save results
@@ -15,23 +15,23 @@ def worker():
 q = Queue.Queue()
 
 flow_tot = 100000
-link_rate = 10
+link_rate = 1
 mean_link_delay = 0.000001
 host_delay = 0.000020
-loads = [0.4, 0.6, 0.8]
+loads = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 connections_per_pair = 2
 mean_flow_size = 1711250
 flow_cdf = 'CDF_dctcp.tcl'
 
 packet_size = 1460
-switch_queue_size = 333
-switch_ecn_thresh = 60
+switch_queue_size = 300
+switch_ecn_thresh = 20
 nic_queue_size = 3333
 nic_ecn_thresh = 3334
 
 init_window = 10
-rto_min = 0.005
-dupack_thresh = 10
+rto_min = 0.010
+dupack_thresh = 3
 enable_flowbender = True
 flowbender_t = 0.05
 flowbender_n = 1
@@ -42,13 +42,15 @@ topology_x = 2
 ns_path = '/home/wei/load_balance/ns-allinone-2.35/ns-2.35/ns'
 sim_script = 'fattree_empirical.tcl'
 
+special_str = '1g_'
+
 for load in loads:
     scheme = 'ecmp'
     if enable_flowbender == True:
         scheme = 'flowbender'
 
-    # directory name: [workload]_[LB scheme]_[load]
-    directory_name = 'websearch_%s_%d' % (scheme, int(load * 100))
+    # directory name: websearch_[special str]_[LB scheme]_[load]
+    directory_name = 'websearch_%s%s_%d' % (special_str, scheme, int(load * 100))
     # simulation command
     cmd = ns_path + ' ' + sim_script + ' '\
         + str(flow_tot) + ' '\
