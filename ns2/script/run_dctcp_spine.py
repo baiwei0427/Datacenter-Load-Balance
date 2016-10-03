@@ -14,16 +14,18 @@ def worker():
 
 q = Queue.Queue()
 
-flow_tot = 100000
+flow_tot = 80000
 link_rate = 1
 mean_link_delay = 0.000001
 host_delay = 0.000020
 loads = [0.2, 0.4, 0.6, 0.8, 0.9]
-connections_per_pair = 2
+connections_per_pair = 8
 mean_flow_size = 1711250
 flow_cdf = 'CDF_dctcp.tcl'
+only_cross_rack = True
 
 packet_size = 1460
+switch_alg = 'DCTCP'
 switch_queue_size = 300
 switch_ecn_thresh = 20
 nic_queue_size = 3333
@@ -36,9 +38,9 @@ enable_flowbender = True
 flowbender_t = 0.05
 flowbender_n = 1
 
-topology_spt = 16
-topology_tors = 8
-topology_spines = 8
+topology_spt = 6
+topology_tors = 2
+topology_spines = 4
 
 ns_path = '/home/wei/load_balance/ns-allinone-2.35/ns-2.35/ns'
 sim_script = 'spine_empirical.tcl'
@@ -62,7 +64,9 @@ for load in loads:
         + str(connections_per_pair) + ' '\
         + str(mean_flow_size) + ' '\
         + str(flow_cdf) + ' '\
+        + str(only_cross_rack) + ' '\
         + str(packet_size) + ' '\
+        + str(switch_alg) + ' '\
         + str(switch_queue_size) + ' '\
         + str(switch_ecn_thresh) + ' '\
         + str(nic_queue_size) + ' '\
