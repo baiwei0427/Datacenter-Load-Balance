@@ -2726,7 +2726,8 @@ FullTcpAgent::timeout_action()
 	dupacks_ = 0;
 
         /* FlowBender algorithm */
-        flowbender_v = (flowbender_v + 1) % flowbender_max_v;
+        if (flowbender_)
+                flowbender_v = (flowbender_v + 1) % max(flowbender_max_v, 1);
 }
 
 /*
@@ -2761,13 +2762,15 @@ void FullTcpAgent::update_dctcp_alpha(Packet *pkt)
 		dctcp_marked = 0;
 		dctcp_total = 0;
 
+                if (!flowbender_)
+                        return;
                 /* FlowBender algorithm */
                 /* if this RTT is congested */
                 if (temp_alpha > flowbender_t_) {
                         /* # of consecutive congested RTTs > N*/
                         if (++num_congested_rtts >= flowbender_n_) {
                                 num_congested_rtts = 0;
-                                flowbender_v = (flowbender_v + 1) % flowbender_max_v;
+                                flowbender_v = (flowbender_v + 1) % max(flowbender_max_v, 1);
                         }
                 /* if this RTT is non-congested */
                 } else {
