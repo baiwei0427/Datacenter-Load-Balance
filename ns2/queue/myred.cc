@@ -26,11 +26,15 @@ MyRED::MyRED()
 	thresh_ = 65;
 	mean_pktsize_ = 1500;
         pkt_total_ = 0;
+        pkt_mark_ = 0;
 	pkt_drop_ = 0;
+
+        qlen_tchan_ = NULL;
 
 	bind("thresh_", &thresh_);
 	bind("mean_pktsize_", &mean_pktsize_);
 	bind("pkt_total_", &pkt_total_);
+        bind("pkt_mark_", &pkt_mark_);
 	bind("pkt_drop_", &pkt_drop_);
 }
 
@@ -54,7 +58,8 @@ void MyRED::enque(Packet* p)
 
         if (len > thresh_ * mean_pktsize_ && hf->ect())
         {
-                hf->ect() = 1;
+                hf->ce() = 1;
+                pkt_mark_++;
         }
 
         q_->enque(p);
@@ -62,5 +67,43 @@ void MyRED::enque(Packet* p)
 
 Packet* MyRED::deque()
 {
+        trace_qlen();
         return q_->deque();
+}
+
+/*
+ * $q trace-qlen file
+ */
+int MyRED::command(int argc, const char*const* argv)
+{
+        if (argc == 3)
+        {
+                if (strcmp(argv[1], "trace-qlen") == 0)
+                {
+                        int mode;
+                        const char* id = argv[2];
+                        Tcl& tcl = Tcl::instance();
+                        if ((qlen_tchan_ = Tcl_GetChannel(tcl.interp(), (char*)id, &mode)) == 0)
+                        {
+                                tcl.resultf("DCTCP: trace: can't attach %s for writing", id);
+        			return (TCL_ERROR);
+        		}
+
+                        return (TCL_OK);
+                }
+        }
+
+        return (Queue::command(argc, argv));
+}
+
+/* routine to write queue length records */
+void MyRED::trace_qlen()
+{
+        if (!qlen_tchan_ || !q_)
+                return;
+
+        char wrk[100];
+        memset(wrk, 0, 100);
+        sprintf(wrk, "%g , %d\n", Scheduler::instance().clock(), q_->byteLength());
+        Tcl_Write(qlen_tchan_, wrk, strlen(wrk));
 }
