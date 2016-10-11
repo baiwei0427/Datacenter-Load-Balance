@@ -1,7 +1,40 @@
 import threading
 import os
 import Queue
+import sys
 
+####### flow size CDF file name -> workload name
+def workload(file_name):
+    if file_name == 'CDF_dctcp.tcl':
+        return 'websearch'
+    elif file_name == 'CDF_vl2.tcl':
+        return 'datamining'
+    elif file_name == 'CDF_fb.tcl':
+        return 'facebook'
+    else:
+        return file_name.replace('CDF', '').replace('_', '').replace('tcl', '')
+
+###### get mean flow size from the flow size CDF file
+def get_mean_flow_size(file_name):
+    f = open(file_name, 'rb')
+    lines = f.readlines()
+    f.close()
+
+    cdf_array = []
+    for line in lines:
+        arr = line.split()
+        if len(arr) == 3:
+            cdf_array.append([int(arr[0]), float(arr[2])])
+
+    if len(cdf_array) <= 1:
+        return -1
+
+    sum = 0.0
+    for i in range(1, len(cdf_array)):
+        sum = sum + (cdf_array[i][0] + cdf_array[i-1][0]) * (cdf_array[i][1] - cdf_array[i-1][1]) / 2
+    return sum
+
+###### create the directory (if not exist) and run simulation command
 def worker():
     while True:
         try:
@@ -9,27 +42,27 @@ def worker():
         except Queue.Empty:
             return
         #Make directory to save results
-        os.system('mkdir '+j[1])
+        os.system('mkdir -p '+j[1])
         os.system(j[0])
 
 q = Queue.Queue()
 
-flow_tot = 80000
-link_rate = 1
+flow_tot = 100000
+link_rate = 10
 mean_link_delay = 0.000001
 host_delay = 0.000020
 loads = [0.2, 0.4, 0.6, 0.8, 0.9]
-connections_per_pair = 8
-mean_flow_size = 1711250
-flow_cdf = 'CDF_dctcp.tcl'
+connections_per_pair = 10
+flow_cdf = 'CDF_vl2.tcl'
+mean_flow_size = get_mean_flow_size(flow_cdf)
 only_cross_rack = True
 
 packet_size = 1460
 switch_alg = 'DCTCP'
-switch_queue_size = 300
-switch_ecn_thresh = 20
-nic_queue_size = 3333
-nic_ecn_thresh = 3334
+switch_queue_size = 333
+switch_ecn_thresh = 65
+nic_queue_size = 6666
+nic_ecn_thresh = 6667
 
 init_window = 10
 rto_min = 0.010
@@ -38,22 +71,26 @@ enable_flowbender = True
 flowbender_t = 0.05
 flowbender_n = 1
 
-topology_spt = 6
-topology_tors = 2
+topology_spt = 8
+topology_tors = 4
 topology_spines = 4
 
 ns_path = '/home/wei/load_balance/ns-allinone-2.35/ns-2.35/ns'
 sim_script = 'spine_empirical.tcl'
 
-special_str = 'spine_1g_'
+special_str = 'spine_10g_'
+
+if int(mean_flow_size) <= 0:
+    print 'Invalid flow size CDF file %s' % flow_cdf
+    sys.exit(0)
 
 for load in loads:
     scheme = 'ecmp'
     if enable_flowbender == True:
         scheme = 'flowbender'
 
-    # directory name: websearch_[special str]_[LB scheme]_[load]
-    directory_name = 'websearch_%s%s_%d' % (special_str, scheme, int(load * 100))
+    # directory name: [workload]_[special str]_[LB scheme]_[load]
+    directory_name = '%s_%s%s_%d' % (workload(flow_cdf), special_str, scheme, int(load * 100))
     # simulation command
     cmd = ns_path + ' ' + sim_script + ' '\
         + str(flow_tot) + ' '\
