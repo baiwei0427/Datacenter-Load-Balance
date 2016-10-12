@@ -22,26 +22,27 @@ set nic_queue_size [lindex $argv 13]
 set nic_ecn_thresh [lindex $argv 14]
 
 #### TCP options
-set init_window [lindex $argv 15]
-set rto_min [lindex $argv 16]
-set dupack_thresh [lindex $argv 17]
-set enable_flowbender [lindex $argv 18]
-set flowbender_t [lindex $argv 19]
-set flowbender_n [lindex $argv 20]
+set source_alg [lindex $argv 15]
+set init_window [lindex $argv 16]
+set rto_min [lindex $argv 17]
+set dupack_thresh [lindex $argv 18]
+set enable_flowbender [lindex $argv 19]
+set flowbender_t [lindex $argv 20]
+set flowbender_n [lindex $argv 21]
 
 #### Topology
-set topology_spt [lindex $argv 21]; #number of servers per ToR
-set topology_tors [lindex $argv 22]; #number of ToR switches
-set topology_spines [lindex $argv 23]; #number of spine (core) switches
+set topology_spt [lindex $argv 22]; #number of servers per ToR
+set topology_tors [lindex $argv 23]; #number of ToR switches
+set topology_spines [lindex $argv 24]; #number of spine (core) switches
 
 ### result file
-set flowlog [open [lindex $argv 24] w]
+set flowlog [open [lindex $argv 25] w]
 
 set debug_mode 1
 set sim_start [clock seconds]
 set flow_gen 0; #the number of flows that have been generated
 set flow_fin 0; #the number of flows that have finished
-set source_alg Agent/TCP/FullTcp/Sack
+#set source_alg Agent/TCP/FullTcp/Sack
 
 ################## TCP #########################
 Agent/TCP set ecn_ 1

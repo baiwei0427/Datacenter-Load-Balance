@@ -47,7 +47,7 @@ def worker():
 
 q = Queue.Queue()
 
-flow_tot = 100000
+flow_tot = 50000
 link_rate = 10
 mean_link_delay = 0.000001
 host_delay = 0.000020
@@ -59,11 +59,12 @@ only_cross_rack = True
 
 packet_size = 1460
 switch_alg = 'DCTCP'
-switch_queue_size = 333
+switch_queue_size = 400
 switch_ecn_thresh = 65
-nic_queue_size = 6666
-nic_ecn_thresh = 6667
+nic_queue_size = 400
+nic_ecn_thresh = 65
 
+source_alg = 'Agent/TCP/FullTcp/Newreno'
 init_window = 10
 rto_min = 0.010
 dupack_thresh = 3
@@ -108,6 +109,7 @@ for load in loads:
         + str(switch_ecn_thresh) + ' '\
         + str(nic_queue_size) + ' '\
         + str(nic_ecn_thresh) + ' '\
+        + str(source_alg) + ' '\
         + str(init_window) + ' '\
         + str(rto_min) + ' '\
         + str(dupack_thresh) + ' '\
