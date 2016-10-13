@@ -202,6 +202,7 @@ FullTcpAgent::delay_bind_init_all()
         delay_bind_init_one("flowbender_");
         delay_bind_init_one("flowbender_t_");
         delay_bind_init_one("flowbender_n_");
+        delay_bind_init_one("restart_");
 
 	TcpAgent::delay_bind_init_all();
 
@@ -235,6 +236,7 @@ FullTcpAgent::delay_bind_dispatch(const char *varName, const char *localName, Tc
         if (delay_bind_bool(varName, localName, "flowbender_", &flowbender_, tracer)) return TCL_OK;
         if (delay_bind(varName, localName, "flowbender_t_", &flowbender_t_, tracer)) return TCL_OK;
         if (delay_bind(varName, localName, "flowbender_n_", &flowbender_n_, tracer)) return TCL_OK;
+        if (delay_bind_bool(varName, localName, "restart_", &restart_, tracer)) return TCL_OK;
 
         return TcpAgent::delay_bind_dispatch(varName, localName, tracer);
 }
@@ -355,6 +357,13 @@ FullTcpAgent::advanceby(int np)
 void
 FullTcpAgent::advance_bytes(int nb)
 {
+
+        if (restart_) {
+                cwnd_ = initial_window();
+                ssthresh_ = int(wnd_);
+                if (max_ssthresh_ > 0 && max_ssthresh_ < ssthresh_)
+                        ssthresh_ = max_ssthresh_;
+        }
 
 	//
 	// state-specific operations:
@@ -2757,6 +2766,8 @@ void FullTcpAgent::update_dctcp_alpha(Packet *pkt)
 			temp_alpha = ((double) dctcp_marked) / dctcp_total;
 		else
 			temp_alpha = 0.0;
+
+                //printf("%d / %d\n", dctcp_marked, dctcp_total);
 
 		dctcp_alpha_ = (1 - dctcp_g_) * dctcp_alpha_ + dctcp_g_ * temp_alpha;
 		dctcp_marked = 0;

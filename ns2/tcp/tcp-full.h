@@ -124,7 +124,8 @@ public:
 	        dctcp_total(0), dctcp_marked(0), dctcp_alpha_update_seq(0),
 	        dctcp_maxseq(0), ce_transition(0),
                 flowbender_(FALSE), flowbender_t_(0.05), flowbender_n_(1),
-                flowbender_v(0), flowbender_max_v(100000), num_congested_rtts(0)  { }
+                flowbender_v(0), flowbender_max_v(100000), num_congested_rtts(0),
+		restart_(FALSE)  { }
 
 	~FullTcpAgent() { cancel_timers(); rq_.clear(); }
 	virtual void recv(Packet *pkt, Handler*);
@@ -261,6 +262,8 @@ protected:
         int flowbender_v;       //V in paper
         int flowbender_max_v;   //maximum value of V
         int num_congested_rtts; //number of consecutive congested RTTs
+
+	int restart_;	//restart from the slow start phase for every flow
 
 	/*
 	* the following are part of a tcpcb in "real" RFC1323 TCP
