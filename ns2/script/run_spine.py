@@ -47,7 +47,7 @@ def worker():
 
 q = Queue.Queue()
 
-flow_tot = 50000
+flow_tot = 20000
 link_rate = 10
 mean_link_delay = 0.000001
 host_delay = 0.000020
@@ -64,13 +64,14 @@ switch_ecn_thresh = 65
 nic_queue_size = 400
 nic_ecn_thresh = 65
 
-source_alg = 'Agent/TCP/FullTcp/Newreno'
+source_alg = 'Agent/TCP/FullTcp/Sack'#'Agent/TCP/FullTcp/Newreno'
 init_window = 10
 rto_min = 0.010
 dupack_thresh = 3
 enable_flowbender = True
 flowbender_t = 0.05
 flowbender_n = 1
+restart = True
 
 topology_spt = 8
 topology_tors = 4
@@ -116,6 +117,7 @@ for load in loads:
         + str(enable_flowbender) + ' '\
         + str(flowbender_t) + ' '\
         + str(flowbender_n) + ' '\
+        + str(restart) + ' '\
         + str(topology_spt) + ' '\
         + str(topology_tors) + ' '\
         + str(topology_spines) + ' '\

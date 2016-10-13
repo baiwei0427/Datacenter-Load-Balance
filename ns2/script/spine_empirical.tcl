@@ -29,14 +29,15 @@ set dupack_thresh [lindex $argv 18]
 set enable_flowbender [lindex $argv 19]
 set flowbender_t [lindex $argv 20]
 set flowbender_n [lindex $argv 21]
+set restart [lindex $argv 22]
 
 #### Topology
-set topology_spt [lindex $argv 22]; #number of servers per ToR
-set topology_tors [lindex $argv 23]; #number of ToR switches
-set topology_spines [lindex $argv 24]; #number of spine (core) switches
+set topology_spt [lindex $argv 23]; #number of servers per ToR
+set topology_tors [lindex $argv 24]; #number of ToR switches
+set topology_spines [lindex $argv 25]; #number of spine (core) switches
 
 ### result file
-set flowlog [open [lindex $argv 25] w]
+set flowlog [open [lindex $argv 26] w]
 
 set debug_mode 1
 set sim_start [clock seconds]
@@ -67,6 +68,7 @@ Agent/TCP/FullTcp set interval_ 0.000006; #delayed ACK interval
 Agent/TCP/FullTcp set flowbender_ $enable_flowbender
 Agent/TCP/FullTcp set flowbender_t_ $flowbender_t
 Agent/TCP/FullTcp set flowbender_n_ $flowbender_n
+Agent/TCP/FullTcp set restart_ $restart
 
 ################ Queue #########################
 Queue set limit_ $switch_queue_size
@@ -163,6 +165,7 @@ puts "Arrival: Poisson with inter-arrival [expr 1 / $lambda * 1000] ms"
 puts "Average flow size: $mean_flow_size bytes"
 puts "Total fan-in degree: $total_senders"
 puts "Cross rack fan-in degree: $cross_rack_senders"
+puts "TCP congestion control algorithm: $source_alg"
 puts "Setting up connections ..."; flush stdout
 
 for {set j 0} {$j < $topology_servers} {incr j} {
