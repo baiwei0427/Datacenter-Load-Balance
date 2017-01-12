@@ -72,18 +72,18 @@ l3 l3table add mac=00:00:00:00:69:FE ip=192.168.101.36 port=ge26 intf=0
 l3 l3table add mac=00:00:00:00:6a:FE ip=192.168.101.46 port=ge27 intf=0
 
 m wredconfig_packet maxdroprate=0xe enable=1
-m wredparam_packet dropstartpoint=20 dropendpoint=20
+m wredparam_packet dropstartpoint=10 dropendpoint=10
 s ecn_config 0xffffff
 
 fp init
 cos config numcos=2
 fp qset add dscp
 fp group create 0 1
-fp entry create 1 0 
+fp entry create 1 0
 fp qual 0 dscp 0x00 0xfc
 fp action add 0 cosqnew 0
 fp entry install 0
-fp entry create 1 1 
+fp entry create 1 1
 fp qual 1 dscp 0x04 0xfc
 fp action add 1 cosqnew 1
 fp entry install 1
